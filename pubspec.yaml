@@ -1,0 +1,69 @@
+name: mtubilgimobil
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # 🔹 Firebase paketleri (uyumlu sürümler)
+  firebase_core: ^2.32.0
+  firebase_auth: ^4.17.9
+  cloud_firestore: ^4.17.5
+  firebase_messaging: ^14.7.10
+  firebase_app_check: ^0.2.1+9
+  # firebase_storage kaldırıldı (Spark planda kullanılamıyor)
+
+  # 🔹 State management ve routing
+  flutter_riverpod: ^3.0.3
+  go_router: ^17.0.0
+
+  # 🔹 UI paketleri
+  google_fonts: ^6.3.2
+  image_picker: ^1.1.2
+  http: ^1.1.0
+
+  # 🔹 Local notifications
+  flutter_local_notifications: ^17.0.0
+
+  # 🔹 Localization
+  flutter_localizations:
+    sdk: flutter
+
+  # 🔹 Sosyal medya ikonları
+  font_awesome_flutter: ^10.7.0
+
+  # 🔹 Link açmak için
+  url_launcher: ^6.2.5
+
+  # 🔹 Harita için
+  flutter_map: ^7.0.0
+  latlong2: ^0.9.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+  # 🔹 Uygulama ikonları için
+  flutter_launcher_icons: ^0.13.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/
+
+# 🔹 Uygulama ikonu ayarları
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon.png"
+  min_sdk_android: 21
