@@ -80,10 +80,9 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // 🔹 Küçük ve ortalı buton
                     Center(
                       child: SizedBox(
-                        width: 150, // ✅ sabit genişlik
+                        width: 150,
                         child: FilledButton.icon(
                           onPressed: _loading ? null : _login,
                           icon: _loading
@@ -114,7 +113,6 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
   Future<void> _login() async {
     setState(() => _loading = true);
     try {
@@ -144,14 +142,13 @@ class _LoginPageState extends State<LoginPage> {
         final role = roleSnapshot.data()?['role'] ?? "student";
 
         // 🔹 E-posta doğrulama kontrolü
-        // admin ve superadmin için istisna, diğer roller için zorunlu
- //       if (!user.emailVerified && role != "admin" && role != "superadmin") {
-        //         ScaffoldMessenger.of(context).showSnackBar(
-    //          const SnackBar(content: Text("Lütfen önce e-posta adresinizi doğrulayın.")),
-        //        );
-        //      setState(() => _loading = false);
-        //      return; // ❌ Doğrulanmamış kullanıcıyı içeri alma
-        //   }
+        if (!user.emailVerified && role != "admin" && role != "superadmin") {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Lütfen önce e-posta adresinizi doğrulayın.")),
+          );
+          setState(() => _loading = false);
+          return;
+        }
 
         if (role != "anonymous") {
           await saveTokenToFirestore(user.uid);
@@ -176,10 +173,28 @@ class _LoginPageState extends State<LoginPage> {
           }
         }
       }
+    } on FirebaseAuthException catch (e) {
+      String message;
+      switch (e.code) {
+        case 'invalid-email':
+          message = "Geçersiz e-posta adresi.";
+          break;
+        case 'user-disabled':
+          message = "Bu hesap devre dışı bırakılmış.";
+          break;
+        case 'user-not-found':
+          message = "Bu e-posta ile kayıtlı kullanıcı bulunamadı.";
+          break;
+        case 'wrong-password':
+          message = "Hatalı şifre girdiniz.";
+          break;
+        default:
+          message = "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.";
+      }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
     } catch (e) {
-      debugPrint("❌ Login hatası: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Giriş hatası: $e")),
+        const SnackBar(content: Text("Beklenmeyen bir hata oluştu.")),
       );
     } finally {
       setState(() => _loading = false);
@@ -193,18 +208,21 @@ class _LoginPageState extends State<LoginPage> {
         const SnackBar(content: Text("Şifre sıfırlama maili gönderildi!")),
       );
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Girdiğiniz e-posta sistemde kayıtlı değil.")),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Hata: ${e.message}")),
-        );
+      String message;
+      switch (e.code) {
+        case 'invalid-email':
+          message = "Geçersiz e-posta formatı.";
+          break;
+        case 'user-not-found':
+          message = "Bu e-posta ile kayıtlı kullanıcı bulunamadı.";
+          break;
+        default:
+          message = "Şifre sıfırlama işlemi başarısız.";
       }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Hata: $e")),
+        const SnackBar(content: Text("Beklenmeyen bir hata oluştu.")),
       );
     }
   }
